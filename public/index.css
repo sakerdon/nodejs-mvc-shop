@@ -1,0 +1,17 @@
+.nav-wrapper {
+  padding: 0 2rem;
+}
+
+.card-action {
+	display: flex;
+}
+
+
+.card-action {
+	display: flex;
+	align-items: center;
+}
+
+.card-action form {
+	margin-left: auto;
+}

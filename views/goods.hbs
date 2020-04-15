@@ -1,0 +1,30 @@
+<h1>Goods</h1>
+
+{{#if goodsList.length}}
+<div class="row">
+{{#each goodsList}}
+  <div class="col s6">
+    <div class="card">
+      <div class="card-image">
+        <img src="{{image}}" alt="{{title}}">
+      </div>
+      <div class="card-content">
+        <span class="card-title">{{title}}</span>
+        <p class="price">{{price}} RUB</p>
+      </div>
+      <div class="card-action">
+        <a href="/goods/{{id}}">Show more</a>
+        <a href="/goods/{{id}}/edit?allow=true">Edit</a>
+
+        <form action="cart/add" method="post">
+          <input type="hidden" name="id" value="{{id}}">
+          <button type="submit" class="btn btn-primary">Add to Cart</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{{/each}}
+</div>
+{{else}}
+<p>Nothing to show</p>
+{{/if}}

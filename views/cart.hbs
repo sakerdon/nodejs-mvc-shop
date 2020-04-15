@@ -1,0 +1,32 @@
+<h1>Cart</h1>
+
+{{#if cartList.length}}
+<table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Count</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {{#each cartList}}
+      <tr>
+        <td>{{title}}</td>
+        <td>{{count}}</td>
+        <td>
+          <form action="/cart/remove" method="post">
+            <input type="hidden" name="id" value="{{id}}">
+            <button type="submit" class="btn btm-small">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <p><strong>Total:</strong> <span class="price">{{price}}</span></p>
+{{else}}
+  <p>Cart is empty</p>
+{{/if}}
