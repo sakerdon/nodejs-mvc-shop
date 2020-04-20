@@ -13,11 +13,11 @@
         <p class="price">{{price}} RUB</p>
       </div>
       <div class="card-action">
-        <a href="/goods/{{id}}">Show more</a>
-        <a href="/goods/{{id}}/edit?allow=true">Edit</a>
+        <a href="/goods/{{_id}}">Show more</a>
+        <a href="/goods/{{_id}}/edit?allow=true">Edit</a>
 
         <form action="cart/add" method="post">
-          <input type="hidden" name="id" value="{{id}}">
+          <input type="hidden" name="id" value="{{_id}}">
           <button type="submit" class="btn btn-primary">Add to Cart</button>
         </form>
       </div>

@@ -5,15 +5,16 @@ const Goods = require('../models/goods.js');
 
 router.get('/', (req, res) => {
   res.render('add', {
-  	title: 'Add new'
+  	title: 'Add new',
   });
 });
 
 router.post('/', (req, res) => {
-	const goods = new Goods(req.body);
+	const goods = new Goods({...req.body, userId: req.user});
+
 	goods.save()
 		.then(() => res.redirect('/goods'))
-		.catch((err) => res.end(err));
+		.catch((err) => {throw err});
 
 });
 

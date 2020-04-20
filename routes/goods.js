@@ -5,11 +5,13 @@ const router = new Router();
 const Goods = require('../models/goods');
 
 /** Модель корзины*/
-const Cart = require('../models/cart');
+// const Cart = require('../models/cart');
 
 /** Получить и вывести список товаров*/
 router.get('/', async (req, res) => {
-    const goodsList = await new Goods({}).getAll();
+    const goodsList = await Goods.find({}).lean();
+
+    console.log('goodsList', goodsList);
     res.render('goods', {
         title: 'Goods',
         goodsList
@@ -21,7 +23,7 @@ router.get('/:id/edit', async (req, res) => {
 	if (!req.query.allow) {
 		return res.redirect('/');
 	}
-    const goodsItem = await new Goods({}).getById(req.params.id);
+    const goodsItem = await Goods.findById(req.params.id).lean();
 
 	res.render('edit', {
         title: goodsItem.title,
@@ -31,7 +33,7 @@ router.get('/:id/edit', async (req, res) => {
 
 /** Получить и вывести карточку товара*/
 router.get('/:id', async (req, res) => {
-    const goodsItem = await new Goods({}).getById(req.params.id);
+    const goodsItem = await Goods.findById(req.params.id).lean();
     res.render('goodsCard', {
         title: goodsItem.title,
         goodsItem
@@ -40,8 +42,16 @@ router.get('/:id', async (req, res) => {
 
 /** Изменить товар*/
 router.post('/edit', async (req, res) => {
-    await new Goods(req.body).update();
-    res.redirect(`/goods/${req.body.id}`);
+    const id = req.body.id;
+    delete req.body.id;
+    await Goods.findByIdAndUpdate(id, req.body).lean();
+    res.redirect(`/goods/${id}`);
+});
+
+/** Удалить товар*/
+router.post('/remove', async (req, res) => {
+    await Goods.deleteOne({_id: req.body.id})/*.lean()*/;
+    res.redirect(`/goods/`);
 });
 
 

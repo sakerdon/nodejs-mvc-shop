@@ -1,6 +1,7 @@
 <h1>Cart</h1>
 
 {{#if cartList.length}}
+<p> {{ cartTotalCount }} goods in your cart</p>
 <table>
     <thead>
       <tr>
@@ -10,14 +11,14 @@
       </tr>
     </thead>
     <tbody>
-      
+        
       {{#each cartList}}
       <tr>
         <td>{{title}}</td>
         <td>{{count}}</td>
         <td>
           <form action="/cart/remove" method="post">
-            <input type="hidden" name="id" value="{{id}}">
+            <input type="hidden" name="id" value="{{_id}}">
             <button type="submit" class="btn btm-small">Remove</button>
           </form>
         </td>
@@ -27,6 +28,11 @@
   </table>
 
   <p><strong>Total:</strong> <span class="price">{{price}}</span></p>
+
+  <form action="/order" method="post">
+    <button class="btn">Order now</button>
+  </form>
+
 {{else}}
   <p>Cart is empty</p>
 {{/if}}
