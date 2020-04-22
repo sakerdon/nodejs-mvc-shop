@@ -4,7 +4,11 @@
     <p class="price">{{goodsItem.price}} RUB</p>
   </div>
   <div class="card-action">
-    <a href="#{{goodsItem.id}}">Add to cart</a>
+    <form action="/cart/add" method="post">
+      <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+      <input type="hidden" name="id" value="{{goodsItem._id}}">
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </form>
   </div>
   <div class="card-image">
     <img src="{{goodsItem.image}}" alt="{{goodsItem.title}}">

@@ -2,9 +2,17 @@ const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const SessionStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
+
+const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://admin:123@cluster0-bwtei.mongodb.net/shop';
+
+// custom middlewares
+const variablesMiddleware = require('./middleware/variables');
+const userMiddleware = require('./middleware/user');
 
 // models
-// const Cart = require('./models/cart');
 const User = require('./models/user');
 
 // routes
@@ -13,64 +21,71 @@ const goodsRoute = require('./routes/goods');
 const addRoute = require('./routes/add');
 const cartRoute = require('./routes/cart');
 const orderRoute = require('./routes/order');
+const authRoute = require('./routes/auth');
 
 const PORT = process.env.PORT || 3000;
-
 const app = express();
-
-
-/** Midlleware, обрабатывающий все что связано с User*/
-app.use( async (req, res, next) => {
-  try {
-    const user = await User.findById('5e970082836b900ee41105aa');
-    req.user = user;
-
-    const hbs = exphbs.create({
-      defaultLayout: 'main',
-      extname: 'hbs',
-      helpers: {
-            totalCount: () => {
-              return user.getTotalCount();
-            }, 
-            formatDate: (date) => {
-              return new Intl.DateTimeFormat('en', {
-                  day: '2-digit',
-                  weekday: 'short',
-                  month: 'long',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-              }).format(new Date(date))
-            }
-      }
-    });
-
-    app.engine('hbs', hbs.engine);
-    app.set('view engine', 'hbs');
-    app.set('views', 'views');
-
-    next();
-  } catch(err) {
-    console.log(err);
-  }
-});
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({extended: true}))
 
+
+
+/** Устанавливаем сессию*/
+const sessionStore = new SessionStore({
+  collection: 'sessions',
+  uri: MONGODB_URL
+})
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore
+}));
+
+/** Защита от CSRF*/
+app.use(csrf());
+
+
+/** Кастомные middleware*/
+app.use(variablesMiddleware);
+app.use(userMiddleware);
+
+
+/** Регистрация Handlebars*/
+const hbs = exphbs.create({
+  defaultLayout: 'main',
+  extname: 'hbs',
+  helpers: {
+        formatDate: (date) => {
+          return new Intl.DateTimeFormat('en', {
+              day: '2-digit',
+              weekday: 'short',
+              month: 'long',
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+          }).format(new Date(date))
+        }
+  }
+});
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', 'views');
+
+
+/** middlewares контроллеров*/
 app.use('/', homeRoute);
 app.use('/goods', goodsRoute);
 app.use('/add', addRoute);
 app.use('/cart', cartRoute);
 app.use('/order', orderRoute);
+app.use('/auth', authRoute);
 
 
-
-
+/** Попытка подключиться к базе до того как будет запущен сервер*/
 (async function() {
-  const url = 'mongodb+srv://admin:123@cluster0-bwtei.mongodb.net/shop';
   try {
-    await mongoose.connect(url, {useNewUrlParser: true,  useUnifiedTopology: true, useFindAndModify: true});
+    await mongoose.connect(MONGODB_URL, {useNewUrlParser: true,  useUnifiedTopology: true, useFindAndModify: true});
     console.log('Connected to db');
 
     const candidate = await User.findOne();

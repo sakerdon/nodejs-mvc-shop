@@ -1,6 +1,9 @@
 const { Router } = require('express');
 const router = new Router();
 
+const authMiddleware = require('../middleware/auth');
+
+
 /** Модель товаров*/
 const Goods = require('../models/goods');
 
@@ -19,7 +22,7 @@ router.get('/', async (req, res) => {
 });
 
 /** Получить и вывести форму редактирования товара*/
-router.get('/:id/edit', async (req, res) => {
+router.get('/:id/edit', authMiddleware, async (req, res) => {
 	if (!req.query.allow) {
 		return res.redirect('/');
 	}
@@ -41,7 +44,7 @@ router.get('/:id', async (req, res) => {
 });
 
 /** Изменить товар*/
-router.post('/edit', async (req, res) => {
+router.post('/edit', authMiddleware, async (req, res) => {
     const id = req.body.id;
     delete req.body.id;
     await Goods.findByIdAndUpdate(id, req.body).lean();
@@ -49,7 +52,7 @@ router.post('/edit', async (req, res) => {
 });
 
 /** Удалить товар*/
-router.post('/remove', async (req, res) => {
+router.post('/remove', authMiddleware, async (req, res) => {
     await Goods.deleteOne({_id: req.body.id})/*.lean()*/;
     res.redirect(`/goods/`);
 });

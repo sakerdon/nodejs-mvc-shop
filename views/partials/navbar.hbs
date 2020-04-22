@@ -6,8 +6,15 @@
 	    <ul id="nav-mobile" class="right hide-on-med-and-down">
 	      <li><a href="/">Home</a></li>
 	      <li><a href="/goods">Goods</a></li>
+		  {{#if isAuth}}	
 	      <li><a href="/add">Add goods</a></li>
-	      <li><a href="/cart">🛒 {{ totalCount }}</a></li>
+	      <li><a href="/cart">🛒 <sup>{{ totalCount }}</sup></a></li>
+	      <li><a href="/auth/logout">Logout ➡️</a></li>
+		  {{else}}	
+	      <li><a href="/auth/login">Login</a></li>
+	      <li><a href="/auth/register">Regiseter</a></li>
+		  {{/if}}	
+
 
 	    </ul>
 	  </div>

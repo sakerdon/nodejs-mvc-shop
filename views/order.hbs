@@ -5,29 +5,27 @@
 
 {{#if orders.length}}
   {{#each orders}}
-    <div class="row">
-      <div class="col s6 offset-s3">
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">
-              <small> Order <strong>#{{_id}}</strong></small>
-            </span>
-            <p class="date">{{formatDate date}}</p>
-            <p><em>{{user.userId.name}}</em> ({{user.userId.email}})</p>
-
-            <ol>
-              {{#each goods}}
-                <li>
-                  {{goodsItem.title}} (x<strong>{{count}}</strong>)
-                </li>
-              {{/each}}
-            </ol>
-
-            <hr>
-
-            <p>Total price: <span class="price">{{price}}</span></p>
-          </div>
+    <div class="card">
+      <div class="card-content">
+        <div class="card-title">
+          <p><strong>Order: </strong> #{{_id}}</p>
+          <p><strong>Date: </strong>{{formatDate date}}</p>
+          <p><strong>User: </strong>{{user.userId.email}}</p>
+        
+        <hr>
+        <strong>Goods: </strong>
+        <ol>
+          {{#each goods}}
+            <li>
+              {{goodsItem.title}} (<strong>x {{count}}</strong>)
+            </li>
+          {{/each}}
+        </ol>
         </div>
+
+        <hr>
+
+        <h3>Total price: <span class="price">{{price}} RUB</span></h3>
       </div>
     </div>
   {{/each}}

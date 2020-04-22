@@ -1,10 +1,12 @@
 const { Router } = require('express');
 const router = new Router();
-
 const Goods = require('../models/goods.js');
 
+const authMiddleware = require('../middleware/auth');
+
+
 /** Отобразить список товаров корзины*/
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   const user = await req.user
   	.populate('cart.items.goodsId')
   	.execPopulate();
@@ -12,8 +14,6 @@ router.get('/', async (req, res) => {
   	const cartList = user.cart.items.map(el => ({  ...el.goodsId._doc, count: el.count  }));
   	const price = cartList.reduce( (acc, el) => acc + el.count * el.price, 0);
   	const cartTotalCount = req.user.getTotalCount();
-
-  	console.log('cartTotalCount', cartTotalCount);
 
   res.render('cart', {
   	title: 'Cart',
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
 
 /** Добавить товар в корзину*/
-router.post('/add', async (req, res) => {
+router.post('/add', authMiddleware, async (req, res) => {
 	const currentPage = req.headers.referer;
 	const goodsItem = await Goods.findById(req.body.id);
 	await req.user.addToCart(goodsItem)
@@ -34,7 +34,7 @@ router.post('/add', async (req, res) => {
 
 
 /** Удалить товар из корзину*/
-router.post('/remove', async (req, res) => {
+router.post('/remove', authMiddleware, async (req, res) => {
 	const currentPage = req.headers.referer;
 	await req.user.removeFromCart(req.body.id);
 	res.redirect(currentPage);

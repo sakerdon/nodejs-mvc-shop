@@ -3,7 +3,10 @@ const router = new Router();
 
 const Order = require('../models/order.js');
 
-router.get('/', async (req, res) => {
+const authMiddleware = require('../middleware/auth');
+
+
+router.get('/', authMiddleware, async (req, res) => {
     try {
 
         const orders = await Order.find({'user.userId': req.user._id})
@@ -24,7 +27,7 @@ router.get('/', async (req, res) => {
 
 });
 
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     try {
 
         const user = await req.user

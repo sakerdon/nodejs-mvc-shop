@@ -1,12 +1,16 @@
 <h1>Edit {{ goodsItem.title }}</h1>
 
 <form action="/goods/remove" method="post" class="right">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+  
   <input type="hidden" name="id" value="{{goodsItem._id}}"> 
   <button class="btn red">Delete</button>
 </form>
   
 
 <form action="/goods/edit" method="POST" class="clearfix">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+
   <div class="input-field">
     <input id="title" name="title" type="text" class="validate" required value="{{goodsItem.title}}">
     <label for="title">Title</label>

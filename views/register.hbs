@@ -1,0 +1,29 @@
+<h1>Register</h1>
+
+{{#each errors}}
+  <div style="color: red">! {{this}}</div>
+{{/each}}
+
+<form action="/auth/register" method="POST">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+
+  <div class="input-field">
+    <input id="email" name="email" type="text" class="validate" required value="{{email}}">
+    <label for="email">Email</label>
+    <span class="helper-text" data-error="Requred"></span>
+  </div>
+
+  <div class="input-field">
+    <input id="password" name="password" type="password" class="validate" required>
+    <label for="password">Password</label>
+    <span class="helper-text" data-error="Requred"></span>
+  </div>
+
+  <div class="input-field">
+    <input id="confirm" name="confirm" type="password" class="validate" required>
+    <label for="confirm">Password again</label>
+    <span class="helper-text" data-error="Requred"></span>
+  </div>
+
+  <button class="btn btn-primary">Submit</button>
+</form>
