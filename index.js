@@ -1,3 +1,8 @@
+require('dotenv').config();
+const MONGODB_URL = process.env.MONGODB_URL;
+const PORT = process.env.PORT;
+const SESSION_SECRET = process.env.SESSION_SECRET;
+
 const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
@@ -5,8 +10,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const SessionStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const helmet = require('helmet');
 
-const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://admin:123@cluster0-bwtei.mongodb.net/shop';
 
 // custom middlewares
 const variablesMiddleware = require('./middleware/variables');
@@ -26,12 +31,12 @@ const orderRoute = require('./routes/order');
 const authRoute = require('./routes/auth');
 const profileRoute = require('./routes/profile');
 
-const PORT = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(express.urlencoded({extended: true}));
+app.use(helmet());
 
 
 
@@ -41,13 +46,13 @@ const sessionStore = new SessionStore({
   uri: MONGODB_URL
 })
 app.use(session({
-  secret: 'secret',
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: sessionStore
 }));
 
-app.use(fileMiddleware.single('avatar'));
+app.use(fileMiddleware.single('avatar')); // Важно подключить до csrf
 
 /** Защита от CSRF*/
 app.use(csrf());

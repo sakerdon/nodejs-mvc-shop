@@ -20,16 +20,15 @@ router.get('/', authMiddleware, (req, res) => {
 router.post('/', authMiddleware, async (req, res) => {
 
     try {
-        const user = await User.findById(req.user._id).lean();
+        const user = await User.findById(req.user._id);
         const avatarUrl = req.file ? req.file.path : '';
         user.avatarUrl = avatarUrl;
-        console.log('---------------', user );
-        // res.redirect('/profile');
+        await user.save();
 
         res.render('profile', {
             title: 'Profile',
             errors: [],
-            user 
+            user: user.toObject()
         });
 
     } catch(err) {
