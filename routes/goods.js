@@ -3,6 +3,9 @@ const router = new Router();
 
 const authMiddleware = require('../middleware/auth');
 
+const { validationResult } = require('express-validator');
+const { goodsValidator } = require('../utils/validator');
+
 
 /** Модель товаров*/
 const Goods = require('../models/goods');
@@ -26,12 +29,38 @@ router.get('/:id/edit', authMiddleware, async (req, res) => {
 	if (!req.query.allow) {
 		return res.redirect('/');
 	}
+
     const goodsItem = await Goods.findById(req.params.id).lean();
 
 	res.render('edit', {
         title: goodsItem.title,
         goodsItem
     });
+});
+
+/** Изменить товар*/
+router.post('/edit', authMiddleware, goodsValidator, async (req, res) => {
+    const id = req.body.id;
+    const goodsItem = await Goods.findById(id).lean();
+
+    const errors = validationResult(req).array();
+    const {title, price, image} = req.body;
+
+    if (errors.length) {
+        goodsItem.title = title;
+        return res.status(422).render('edit', {
+            title: goodsItem.title,
+            goodsItem,
+            errors, 
+            itemTitle: title,
+            price,
+            image
+        });
+    }
+
+    delete req.body.id;
+    await Goods.findByIdAndUpdate(id, req.body).lean();
+    res.redirect(`/goods/${id}`);
 });
 
 /** Получить и вывести карточку товара*/
@@ -43,13 +72,6 @@ router.get('/:id', async (req, res) => {
     });
 });
 
-/** Изменить товар*/
-router.post('/edit', authMiddleware, async (req, res) => {
-    const id = req.body.id;
-    delete req.body.id;
-    await Goods.findByIdAndUpdate(id, req.body).lean();
-    res.redirect(`/goods/${id}`);
-});
 
 /** Удалить товар*/
 router.post('/remove', authMiddleware, async (req, res) => {

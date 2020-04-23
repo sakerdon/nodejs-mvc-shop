@@ -1,7 +1,7 @@
 <h1>Login</h1>
 
 {{#each errors}}
-  <div style="color: red">! {{this}}</div>
+  <div style="color: red">! {{msg}}</div>
 {{/each}}
 
 <form action="/auth/login" method="POST">

@@ -1,7 +1,9 @@
 const { Router } = require('express');
 const router = new Router();
-
 const bcrypt = require('bcryptjs');
+const {validationResult} = require('express-validator');
+
+const {registerValidator, loginValidator} = require('../utils/validator');
 
 const User = require('../models/user');
 
@@ -14,19 +16,17 @@ router.get('/login', (req, res) => {
   });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', loginValidator, async (req, res) => {
 
   try {
     const {email, password} = req.body;
     const tmp = await User.findOne({email});
-    const errors = [];
+    const errors = validationResult(req).array();
 
-    const isEqual = tmp ? await bcrypt.compare(password, tmp.password) : false;
-
-    if (!tmp || !isEqual) {
+    if (errors.length) {
       res.render('login', {
         title: 'Login',
-        errors: ['Wrong email or password'],
+        errors,
         email
       });
 
@@ -43,8 +43,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-	
-
 
 // register
 router.get('/register', (req, res) => {
@@ -55,27 +53,14 @@ router.get('/register', (req, res) => {
   });
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidator, async (req, res) => {
 	console.log(req.body);
   try {
-    const {email, password, confirm} = req.body;
-    const tmp = await User.findOne({email});
-
-    const errors = [];
-
+    const {email, password} = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
-
-    if (password !== confirm) {
-      errors.push('Confirm password is wrong');
-    }
-
-    if (tmp) {
-      errors.push('Email already register');
-    } 
+    const errors = validationResult(req).array();
 
     if (errors.length) {
-      // res.locals.errors = ['123']
-      // res.redirect('register');
       res.render('register', {
         title: 'Register',
         errors,
@@ -95,7 +80,6 @@ router.post('/register', async (req, res) => {
   }
 
 	// res.redirect('/');
-
 });
 
 // logout

@@ -1,22 +1,29 @@
 <h1>Add new goods</h1>
 
-<form action="/add" method="POST">
+
+
+<form action="/add" method="POST" novalidate="">
+  
+  {{#each errors}}
+    <div style="color: red">! {{msg}}</div>
+  {{/each}}
+
   <input type="hidden" name="_csrf" value="{{csrf}}">
   
   <div class="input-field">
-    <input id="title" name="title" type="text" class="validate" required>
+    <input id="title" name="title" type="text" class="validate" required value={{itemTitle}}>
     <label for="title">Title</label>
     <span class="helper-text" data-error="Requred"></span>
   </div>
 
   <div class="input-field">
-    <input id="price" name="price" type="number" class="validate" required min="1">
+    <input id="price" name="price" type="number" class="validate" required min="1" value={{price}}>
     <label for="price">Price</label>
     <span class="helper-text" data-error="Requred"></span>
   </div>
 
   <div class="input-field">
-    <input id="img" name="image" type="text" class="validate" required>
+    <input id="img" name="image" type="text" class="validate" required value={{image}}>
     <label for="img">Image url</label>
     <span class="helper-text" data-error="Requred"></span>
   </div>

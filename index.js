@@ -11,6 +11,8 @@ const MONGODB_URL = process.env.MONGODB_URL || 'mongodb+srv://admin:123@cluster0
 // custom middlewares
 const variablesMiddleware = require('./middleware/variables');
 const userMiddleware = require('./middleware/user');
+const page404Middleware = require('./middleware/error404')
+const fileMiddleware = require('./middleware/file')
 
 // models
 const User = require('./models/user');
@@ -22,11 +24,14 @@ const addRoute = require('./routes/add');
 const cartRoute = require('./routes/cart');
 const orderRoute = require('./routes/order');
 const authRoute = require('./routes/auth');
+const profileRoute = require('./routes/profile');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
+
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({extended: true}))
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.urlencoded({extended: true}));
 
 
 
@@ -41,6 +46,8 @@ app.use(session({
   saveUninitialized: false,
   store: sessionStore
 }));
+
+app.use(fileMiddleware.single('avatar'));
 
 /** Защита от CSRF*/
 app.use(csrf());
@@ -80,6 +87,8 @@ app.use('/add', addRoute);
 app.use('/cart', cartRoute);
 app.use('/order', orderRoute);
 app.use('/auth', authRoute);
+app.use('/profile', profileRoute);
+app.use(page404Middleware);
 
 
 /** Попытка подключиться к базе до того как будет запущен сервер*/

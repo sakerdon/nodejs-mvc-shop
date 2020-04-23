@@ -1,6 +1,8 @@
 <h1>Edit {{ goodsItem.title }}</h1>
 
 <form action="/goods/remove" method="post" class="right">
+
+  
   <input type="hidden" name="_csrf" value="{{csrf}}">
   
   <input type="hidden" name="id" value="{{goodsItem._id}}"> 
@@ -9,6 +11,9 @@
   
 
 <form action="/goods/edit" method="POST" class="clearfix">
+  {{#each errors}}
+    <div style="color: red">! {{msg}}</div>
+  {{/each}}
   <input type="hidden" name="_csrf" value="{{csrf}}">
 
   <div class="input-field">
